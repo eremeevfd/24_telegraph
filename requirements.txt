@@ -1,1 +1,4 @@
 flask==0.11.1
+flask-sqlalchemy==1.1.10
+flask-migrate==2.0.4
+gunicorn==19.7.1
