@@ -62,7 +62,25 @@ def form():
 def article(article_url):
     open_article = Article.query.filter_by(url=article_url).first()
     cookie = request.cookies.get('session')
+    # form.populate_obj(open_article)
     return render_template('article.html', article=open_article, cookie=cookie)
+
+
+@app.route('/<article_url>/edit', methods=['POST'])
+def edit_article(article_url):
+    open_article = Article.query.filter_by(url=article_url).first()
+    header = request.form['header']
+    signature = request.form['signature']
+    body = request.form['body']
+    if header:
+        open_article.header = header
+    if signature:
+        open_article.signature = signature
+    if body:
+        open_article.body = body
+    db.session.add(open_article)
+    db.session.commit()
+    return redirect(url_for('article', article_url=open_article.url))
 
 
 if __name__ == "__main__":
