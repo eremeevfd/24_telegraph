@@ -28,7 +28,7 @@
 
   <div class="container">
       <div class="col-md-12">
-          <h1>{{ article.header }}<h1>
+          <h1>{{ article.header }}</h1>
       </div>
       <div class="col-md-12">
           {{ article.signature }}
@@ -37,7 +37,9 @@
           <p class="body" style="font-size: 18px;">{{ article.body }}</p>
       </div>
   </div><!-- /.container -->
-
+    {% if cookie == article.cookie %}
+    <button class="btn btn-primary"></button>
+    {% endif %}
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
   </body>
