@@ -37,7 +37,7 @@
           <p class="body" style="font-size: 18px;">{{ article.body }}</p>
       </div>
       <div class="col-md-12">
-          {% if cookie == article.cookie %}
+          {% if article.cookie == cookie %}
               <form method="POST">
                   <div class="form-group">
                       <input name="header" class="form-control" placeholder="{{ article.header }}" autofocus/>

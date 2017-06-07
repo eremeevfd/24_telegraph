@@ -1,9 +1,10 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, make_response, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 import os
 from translit import transliterate
 import datetime
+import uuid
 
 
 basedir = os.path.abspath(os.path.dirname(__file__) + '/')
@@ -40,20 +41,20 @@ def form():
     if request.method == 'POST':
         header = request.form['header']
         signature = request.form['signature']
-
         body = request.form['body']
         url = transliterate(request.form['header'])
         url = url + '-{month}-{day}'.format(month=datetime.date.today().month,
                                             day=datetime.date.today().day)
-        cookie = request.cookies.get('session')
+        cookie = bytes(str(uuid.getnode()), 'utf-8')
         articles_count = Article.query.filter_by(header=header).count()
         if articles_count != 0:
             url = url + '-{article_counter}'.format(article_counter=articles_count+1)
         new_article = Article(header, signature, body, url, cookie)
         db.session.add(new_article)
         db.session.commit()
-        # print(request.cookies.get('session'))
-        return redirect(url_for('article', article_url=url))
+        response = make_response(redirect(url_for('article', article_url=url)))
+        response.set_cookie('host_number', cookie, secure=True)
+        return response
 
     return render_template('form.html')
 
@@ -61,7 +62,7 @@ def form():
 @app.route('/<article_url>', methods=['GET', 'POST'])
 def article(article_url):
     open_article = Article.query.filter_by(url=article_url).first()
-    cookie = request.cookies.get('session')
+    cookie = bytes(request.cookies.get('host_number'), 'utf-8')
     # form.populate_obj(open_article)
     return render_template('article.html', article=open_article, cookie=cookie)
 
