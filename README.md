@@ -1,6 +1,11 @@
 # Telegraph Clone
 
-{TODO. There will be project description}
+Clone of Pavel Durov [Telegraph](telegra.ph).  
+You can visit this example application deployed to heroku [here](https://eremeevfd-telegraph.herokuapp.com/).
+
+# Purpose
+
+This resource is made for fast writing articles. You can do it anonymously or not. Then you get unique link for you article.
 
 # Project Goals
 
