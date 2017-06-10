@@ -45,7 +45,7 @@ def form():
         url = transliterate(request.form['header'])
         url = url + '-{month}-{day}'.format(month=datetime.date.today().month,
                                             day=datetime.date.today().day)
-        cookie = bytes(str(uuid.getnode()), 'utf-8')
+        cookie = str(uuid.getnode())
         articles_count = Article.query.filter_by(header=header).count()
         if articles_count != 0:
             url = url + '-{article_counter}'.format(article_counter=articles_count+1)
@@ -62,7 +62,12 @@ def form():
 @app.route('/<article_url>', methods=['GET', 'POST'])
 def article(article_url):
     open_article = Article.query.filter_by(url=article_url).first()
-    cookie = bytes(request.cookies.get('host_number'), 'utf-8')
+    cookie = request.cookies.get('host_number')
+    print(type(open_article.cookie))
+    print(type(cookie))
+    open_article.cookie = str(open_article.cookie)
+    print(type(open_article.cookie))
+    print(open_article.cookie)
     # form.populate_obj(open_article)
     return render_template('article.html', article=open_article, cookie=cookie)
 
