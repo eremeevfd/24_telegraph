@@ -1,6 +1,6 @@
 # Telegraph Clone
 
-Clone of Pavel Durov [Telegraph](telegra.ph).  
+Clone of Pavel Durov [Telegraph](https://telegra.ph).  
 You can visit this example application deployed to heroku [here](https://eremeevfd-telegraph.herokuapp.com/).
 
 # Purpose
