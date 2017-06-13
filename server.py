@@ -52,7 +52,7 @@ def form():
         new_article = Article(header, signature, body, url, cookie)
         db.session.add(new_article)
         db.session.commit()
-        response = make_response(redirect(url_for('article', article_url=url)))
+        response = make_response(url_for('article', article_url=url))
         response.set_cookie('host_number', cookie, secure=True)
         return response
 
@@ -63,11 +63,7 @@ def form():
 def article(article_url):
     open_article = Article.query.filter_by(url=article_url).first()
     cookie = request.cookies.get('host_number')
-    print(type(open_article.cookie))
-    print(type(cookie))
-    open_article.cookie = str(open_article.cookie)
-    print(type(open_article.cookie))
-    print(open_article.cookie)
+    # open_article.cookie = str(open_article.cookie)
     # form.populate_obj(open_article)
     return render_template('article.html', article=open_article, cookie=cookie)
 

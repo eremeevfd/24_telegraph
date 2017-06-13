@@ -27,7 +27,7 @@
     </nav>
 
   <div class="container">
-      <div class="col-md-12">
+      <div contenteditable="true" visible="" class="col-md-12">
           <h1>{{ article.header }}</h1>
       </div>
       <div class="col-md-12">
@@ -65,7 +65,13 @@
     <script>
         $(".js-btn-edit").click(function () {
             $('.js-form-edit').toggle();
+            change_url();
         })
+    </script>
+    <script>
+        function change_url() {
+            console.log(window.history.length)
+        }
     </script>
   </body>
 </html>
