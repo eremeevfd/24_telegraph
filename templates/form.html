@@ -29,7 +29,7 @@
     <div class="container js-content">
       <form class="js-form">
         <div class="form-group">
-          <input name="header" class="form-control" placeholder="Заголовок" autofocus/>
+          <input name="header" class="form-control js-header" placeholder="Заголовок" autofocus/>
         </div>
         <div class="form-group">
           <input name="signature" class="form-control" placeholder="Подпись"/>
@@ -49,11 +49,18 @@
     <script>
         $(".js-btn-submit").click(function (event) {
             event.preventDefault();
-            $.post("/", $('.js-form').serialize())
-                .done(function ( article_url ) {
-                    console.log(article_url)
-                    history.pushState(article_url, 'page2', article_url);
-                });
+            if ($(".js-header").val().length > 5) {
+                                $.post("/", $('.js-form').serialize())
+                    .done(function (article_url) {
+                        $.get(article_url, function (article) {
+                            $("body").html(article);
+                        });
+                        history.pushState(article_url, article_url, article_url);
+                    });
+            }
+            else {
+                alert('Header is too short!!!!')
+            }
         });
 
     </script>
