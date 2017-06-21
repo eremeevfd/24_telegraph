@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, make_respo
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 import os
-from translit import transliterate
+import cyrtranslit
 import datetime
 import uuid
 
@@ -42,7 +42,7 @@ def form():
         header = request.form['header']
         signature = request.form['signature']
         body = request.form['body']
-        url = transliterate(request.form['header'])
+        url = cyrtranslit.to_latin(request.form['header'], 'ru')
         url = url + '-{month}-{day}'.format(month=datetime.date.today().month,
                                             day=datetime.date.today().day)
         cookie = str(uuid.getnode())
