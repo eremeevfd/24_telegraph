@@ -73,7 +73,7 @@ def article(article_slug):
         abort(404)
 
 
-@app.route('/<article_slug>/edit', methods=['POST'])
+@app.route('/<path:article_slug>/edit', methods=['POST'])
 def edit_article(article_slug):
     open_article = Article.query.filter_by(slug=article_slug).first()
     header = request.form['header']
