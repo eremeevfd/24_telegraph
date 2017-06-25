@@ -51,11 +51,11 @@
             event.preventDefault();
             if ($(".js-header").val().length > 5) {
                                 $.post("/", $('.js-form').serialize())
-                    .done(function (article_url) {
-                        $.get(article_url, function (article) {
+                    .done(function (article_slug) {
+                        $.get(article_slug, function (article) {
                             $("body").html(article);
                         });
-                        history.pushState(article_url, article_url, article_url);
+                        history.pushState(article_slug, article_slug, article_slug);
                     });
             }
             else {

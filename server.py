@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, make_response, session
+from flask import Flask, render_template, request, redirect, url_for, make_response, abort
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 import os
@@ -7,7 +7,7 @@ import datetime
 import uuid
 
 
-basedir = os.path.abspath(os.path.dirname(__file__) + '/')
+basedir = os.path.abspath(os.path.dirname(__file__))
 migration_dir = os.path.abspath(os.path.join(basedir, 'migrations'))
 
 app = Flask(__name__)
@@ -22,14 +22,14 @@ class Article(db.Model):
     header = db.Column(db.String(80))
     signature = db.Column(db.String(80))
     body = db.Column(db.String)
-    url = db.Column(db.String)
+    slug = db.Column(db.String)
     cookie = db.Column(db.String)
 
-    def __init__(self, header, signature, body, url, cookie):
+    def __init__(self, header, signature, body, slug, cookie):
         self.header = header
         self.signature = signature
         self.body = body
-        self.url = url
+        self.slug = slug
         self.cookie = cookie
 
     def __repr__(self):
@@ -42,47 +42,49 @@ def form():
         header = request.form['header']
         signature = request.form['signature']
         body = request.form['body']
-        url = cyrtranslit.to_latin(request.form['header'], 'ru')
-        url = url + '-{month}-{day}'.format(month=datetime.date.today().month,
-                                            day=datetime.date.today().day)
+        slug = cyrtranslit.to_latin(request.form['header'], 'ru')
+        slug = slug.replace(' ', '-')
+        slug = '{slug}-{month}-{day}'.format(slug=slug,
+                                             month=datetime.date.today().month,
+                                             day=datetime.date.today().day)
         cookie = str(uuid.getnode())
         articles_count = Article.query.filter_by(header=header).count()
         if articles_count != 0:
-            url = url + '-{article_counter}'.format(article_counter=articles_count+1)
-        new_article = Article(header, signature, body, url, cookie)
+            slug = "{slug}-{article_counter}".format(slug=slug, article_counter=articles_count + 1)
+        new_article = Article(header, signature, body, slug, cookie)
         db.session.add(new_article)
         db.session.commit()
-        response = make_response(url_for('article', article_url=url))
+        response = make_response(url_for('article', article_slug=slug))
         response.set_cookie('host_number', cookie, secure=True)
         return response
 
     return render_template('form.html')
 
 
-@app.route('/<article_url>', methods=['GET', 'POST'])
-def article(article_url):
-    open_article = Article.query.filter_by(url=article_url).first()
+@app.route('/<path:article_slug>', methods=['GET', 'POST'])
+def article(article_slug):
+    open_article = Article.query.filter_by(slug=article_slug).first()
     cookie = request.cookies.get('host_number')
     # open_article.cookie = str(open_article.cookie)
     # form.populate_obj(open_article)
-    return render_template('article.html', article=open_article, cookie=cookie)
+    if open_article:
+        return render_template('article.html', article=open_article, cookie=cookie)
+    else:
+        abort(404)
 
 
-@app.route('/<article_url>/edit', methods=['POST'])
-def edit_article(article_url):
-    open_article = Article.query.filter_by(url=article_url).first()
+@app.route('/<article_slug>/edit', methods=['POST'])
+def edit_article(article_slug):
+    open_article = Article.query.filter_by(slug=article_slug).first()
     header = request.form['header']
     signature = request.form['signature']
     body = request.form['body']
-    if header:
-        open_article.header = header
-    if signature:
-        open_article.signature = signature
-    if body:
-        open_article.body = body
+    open_article.header = header
+    open_article.signature = signature
+    open_article.body = body
     db.session.add(open_article)
     db.session.commit()
-    return redirect(url_for('article', article_url=open_article.url))
+    return redirect(url_for('article', article_slug=open_article.slug))
 
 
 if __name__ == "__main__":
