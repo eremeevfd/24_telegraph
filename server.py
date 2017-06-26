@@ -19,7 +19,7 @@ migrate = Migrate(app, db, directory=migration_dir)
 
 class Article(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    header = db.Column(db.String(80))
+    header = db.Column(db.String(80), index=True)
     signature = db.Column(db.String(80))
     body = db.Column(db.String)
     slug = db.Column(db.String, index=True)
