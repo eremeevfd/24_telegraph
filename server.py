@@ -22,7 +22,7 @@ class Article(db.Model):
     header = db.Column(db.String(80))
     signature = db.Column(db.String(80))
     body = db.Column(db.String)
-    slug = db.Column(db.String)
+    slug = db.Column(db.String, index=True)
     cookie = db.Column(db.String)
 
     def __init__(self, header, signature, body, slug, cookie):
@@ -47,16 +47,23 @@ def form():
         slug = '{slug}-{month}-{day}'.format(slug=slug,
                                              month=datetime.date.today().month,
                                              day=datetime.date.today().day)
-        cookie = str(uuid.getnode())
-        articles_count = Article.query.filter_by(header=header).count()
+
+        user_id = request.cookies.get('user_id')
+        cookie = user_id or str(uuid.uuid4())
+        articles_count = db.session.query(Article).filter_by(header=header).count()
         if articles_count != 0:
             slug = "{slug}-{article_counter}".format(slug=slug, article_counter=articles_count + 1)
         new_article = Article(header, signature, body, slug, cookie)
         db.session.add(new_article)
         db.session.commit()
+
         response = make_response(url_for('article', article_slug=slug))
-        response.set_cookie('host_number', cookie, secure=True)
-        return response
+
+        if user_id:
+            return response
+        else:
+            response.set_cookie('user_id', cookie, secure=True)
+            return response
 
     return render_template('form.html')
 
@@ -64,9 +71,8 @@ def form():
 @app.route('/<path:article_slug>', methods=['GET', 'POST'])
 def article(article_slug):
     open_article = Article.query.filter_by(slug=article_slug).first()
-    cookie = request.cookies.get('host_number')
-    # open_article.cookie = str(open_article.cookie)
-    # form.populate_obj(open_article)
+    cookie = request.cookies.get('user_id')
+
     if open_article:
         return render_template('article.html', article=open_article, cookie=cookie)
     else:
