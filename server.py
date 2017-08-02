@@ -37,7 +37,7 @@ class Article(db.Model):
         return 'Article %r' % self.header
 
 
-def add_article_counter_increment(header, article_slug):
+def make_article_slug_with_counter(header, article_slug):
     articles_count = db.session.query(Article).filter_by(header=header).count()
     if articles_count != 0:
         slug = "{slug}-{article_counter}".format(slug=article_slug, article_counter=articles_count + 1)
@@ -58,10 +58,7 @@ def form():
 
         user_id = request.cookies.get('user_id')
         cookie = user_id or str(uuid.uuid4())
-        # articles_count = db.session.query(Article).filter_by(header=header).count()
-        # if articles_count != 0:
-        #     slug = "{slug}-{article_counter}".format(slug=slug, article_counter=articles_count + 1)
-        slug = add_article_counter_increment(header, slug) or slug
+        slug = make_article_slug_with_counter(header, slug) or slug
         new_article = Article(header, signature, body, slug, cookie)
         db.session.begin_nested()
         try:
