@@ -66,7 +66,7 @@ def form():
             db.session.commit()
         except IntegrityError:
             db.session.rollback()
-            slug = add_article_counter_increment(header, slug) or slug
+            slug = make_article_slug_with_counter(header, slug) or slug
         response = make_response(url_for('article', article_slug=slug))
 
         if user_id:
