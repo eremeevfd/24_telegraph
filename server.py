@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, make_response, abort
-from flask_sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy, inspect
 from flask_migrate import Migrate
 from sqlalchemy.exc import IntegrityError
 import os
@@ -72,15 +72,17 @@ def form():
         cookie = user_id or str(uuid.uuid4())
         slug = make_article_slug_with_counter(header, slug) or slug
         new_article = Article(header, signature, body, slug, cookie)
-        db.session.begin_nested()
+        app.logger.debug(new_article)
+        # db.session.begin_nested()
         try:
-            db.session.add(new_article)
-            db.session.commit()
+            app.logger.debug(db.session.add(new_article))
+            app.logger.debug(db.session.commit())
         except IntegrityError:
-            db.session.rollback()
+            app.logger.debug(db.session.rollback())
             slug = make_article_slug_with_counter(header, slug) or slug
+            app.logger.debug(slug)
         response = make_response(url_for('article', article_slug=slug))
-
+        app.logger.debug(response)
         if user_id:
             return response
         else:
