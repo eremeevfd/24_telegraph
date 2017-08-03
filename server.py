@@ -6,6 +6,8 @@ import os
 import cyrtranslit
 import datetime
 import uuid
+import logging
+import sys
 
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -16,6 +18,16 @@ app.debug = True
 app.config.from_object('config')
 db = SQLAlchemy(app)
 migrate = Migrate(app, db, directory=migration_dir)
+
+app.logger.setLevel(logging.DEBUG)
+del app.logger.handlers[:]
+handler = logging.StreamHandler(stream=sys.stdout)
+handler.setLevel(logging.DEBUG)
+handler.formatter = logging.Formatter(
+    fmt=u"%(asctime)s level=%(levelname)s %(message)s",
+    datefmt="%Y-%m-%dT%H:%M:%SZ",
+)
+app.logger.addHandler(handler)
 
 
 class Article(db.Model):
