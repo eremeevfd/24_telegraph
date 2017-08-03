@@ -72,17 +72,16 @@ def form():
         cookie = user_id or str(uuid.uuid4())
         slug = make_article_slug_with_counter(header, slug) or slug
         new_article = Article(header, signature, body, slug, cookie)
-        app.logger.debug(new_article)
-        # db.session.begin_nested()
+
         try:
-            app.logger.debug(db.session.add(new_article))
-            app.logger.debug(db.session.commit())
+            db.session.add(new_article)
+            db.session.commit()
         except IntegrityError:
-            app.logger.debug(db.session.rollback())
+            db.session.rollback()
             slug = make_article_slug_with_counter(header, slug) or slug
-            app.logger.debug(slug)
+
         response = make_response(url_for('article', article_slug=slug))
-        app.logger.debug(response)
+
         if user_id:
             return response
         else:
