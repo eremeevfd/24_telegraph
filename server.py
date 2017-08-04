@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, make_response, abort
-from flask_sqlalchemy import SQLAlchemy, inspect
+from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from sqlalchemy.exc import IntegrityError
 import os
@@ -32,8 +32,8 @@ app.logger.addHandler(handler)
 
 class Article(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    header = db.Column(db.String(80), index=True)
-    signature = db.Column(db.String(80))
+    header = db.Column(db.String(length=80), index=True)
+    signature = db.Column(db.String(length=80))
     body = db.Column(db.String)
     slug = db.Column(db.String, index=True, unique=True)
     cookie = db.Column(db.String)
