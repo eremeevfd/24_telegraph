@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, make_respo
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from sqlalchemy.exc import IntegrityError
+from werkzeug.exceptions import NotFound
 import os
 import cyrtranslit
 import datetime
@@ -99,7 +100,7 @@ def article(article_slug):
     if open_article:
         return render_template('article.html', article=open_article, cookie=cookie)
     else:
-        abort(404)
+        abort(NotFound())
 
 
 @app.route('/<path:article_slug>/edit', methods=['POST'])
