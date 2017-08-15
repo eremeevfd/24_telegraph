@@ -32,7 +32,7 @@ app.logger.addHandler(handler)
 
 
 class Article(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    article_id = db.Column(db.Integer, primary_key=True)
     header = db.Column(db.String(length=80), index=True)
     signature = db.Column(db.String(length=80))
     body = db.Column(db.String)
